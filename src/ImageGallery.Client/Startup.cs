@@ -1,4 +1,6 @@
 ﻿using ImageGallery.Client.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +31,24 @@ namespace ImageGallery.Client
 
             // register an IImageGalleryHttpClient
             services.AddScoped<IImageGalleryHttpClient, ImageGalleryHttpClient>();
+
+            services.AddAuthentication(options => {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.Authority = "https://localhost:5001";
+                    options.ClientId = "imagegalleryclient";
+                    options.ResponseType = "code";
+                    //options.UsePkce = false;
+                    //options.CallbackPath = new PathString("...");
+                    options.Scope.Add("openid"); 
+                    options.Scope.Add("profile");
+                    options.SaveTokens = true;
+                    options.ClientSecret = "secret";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +64,9 @@ namespace ImageGallery.Client
             }
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.UseMvc(routes =>
             {

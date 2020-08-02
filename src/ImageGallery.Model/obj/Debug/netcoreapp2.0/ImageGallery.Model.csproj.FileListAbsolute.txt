@@ -1,0 +1,9 @@
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\bin\Debug\netcoreapp2.0\ImageGallery.Model.deps.json
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\bin\Debug\netcoreapp2.0\ImageGallery.Model.dll
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\bin\Debug\netcoreapp2.0\ImageGallery.Model.pdb
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\obj\Debug\netcoreapp2.0\ImageGallery.Model.csprojAssemblyReference.cache
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\obj\Debug\netcoreapp2.0\ImageGallery.Model.AssemblyInfoInputs.cache
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\obj\Debug\netcoreapp2.0\ImageGallery.Model.AssemblyInfo.cs
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\obj\Debug\netcoreapp2.0\ImageGallery.Model.csproj.CoreCompileInputs.cache
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\obj\Debug\netcoreapp2.0\ImageGallery.Model.dll
+F:\Learning\Projects\Practice\PlayWithOAuth_01\src\ImageGallery.Model\obj\Debug\netcoreapp2.0\ImageGallery.Model.pdb
