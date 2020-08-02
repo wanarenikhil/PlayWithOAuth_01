@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ImageGallery.API.Helpers;
 using ImageGallery.API.Services;
 using ImageGallery.Model;
 using Microsoft.AspNetCore.Hosting;
@@ -11,16 +10,24 @@ using System.IO;
 namespace ImageGallery.API.Controllers
 {
     [Route("api/images")]
-    public class ImagesController : Controller
+    [ApiController]
+    public class ImagesController : ControllerBase
     {
         private readonly IGalleryRepository _galleryRepository;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly IMapper _mapper;
 
-        public ImagesController(IGalleryRepository galleryRepository,
-            IHostingEnvironment hostingEnvironment)
+        public ImagesController(
+            IGalleryRepository galleryRepository,
+            IWebHostEnvironment hostingEnvironment,
+            IMapper mapper)
         {
-            _galleryRepository = galleryRepository;
-            _hostingEnvironment = hostingEnvironment;
+            _galleryRepository = galleryRepository ?? 
+                throw new ArgumentNullException(nameof(galleryRepository));
+            _hostingEnvironment = hostingEnvironment ?? 
+                throw new ArgumentNullException(nameof(hostingEnvironment));
+            _mapper = mapper ?? 
+                throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet()]
@@ -30,7 +37,7 @@ namespace ImageGallery.API.Controllers
             var imagesFromRepo = _galleryRepository.GetImages();
 
             // map to model
-            var imagesToReturn = Mapper.Map<IEnumerable<Model.Image>>(imagesFromRepo);
+            var imagesToReturn = _mapper.Map<IEnumerable<Model.Image>>(imagesFromRepo);
 
             // return
             return Ok(imagesToReturn);
@@ -46,7 +53,7 @@ namespace ImageGallery.API.Controllers
                 return NotFound();
             }
 
-            var imageToReturn = Mapper.Map<Model.Image>(imageFromRepo);
+            var imageToReturn = _mapper.Map<Model.Image>(imageFromRepo);
 
             return Ok(imageToReturn);
         }
@@ -54,19 +61,8 @@ namespace ImageGallery.API.Controllers
         [HttpPost()]
         public IActionResult CreateImage([FromBody] ImageForCreation imageForCreation)
         {
-            if (imageForCreation == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                // return 422 - Unprocessable Entity when validation fails
-                return new UnprocessableEntityObjectResult(ModelState);
-            }
-
             // Automapper maps only the Title in our configuration
-            var imageEntity = Mapper.Map<Entities.Image>(imageForCreation);
+            var imageEntity = _mapper.Map<Entities.Image>(imageForCreation);
 
             // Create an image from the passed-in bytes (Base64), and 
             // set the filename on the image
@@ -94,12 +90,9 @@ namespace ImageGallery.API.Controllers
             // add and save.  
             _galleryRepository.AddImage(imageEntity);
 
-            if (!_galleryRepository.Save())
-            {
-                throw new Exception($"Adding an image failed on save.");
-            }
+            _galleryRepository.Save();
 
-            var imageToReturn = Mapper.Map<Image>(imageEntity);
+            var imageToReturn = _mapper.Map<Image>(imageEntity);
 
             return CreatedAtRoute("GetImage",
                 new { id = imageToReturn.Id },
@@ -108,8 +101,7 @@ namespace ImageGallery.API.Controllers
 
         [HttpDelete("{id}")]
         public IActionResult DeleteImage(Guid id)
-        {
-            
+        {            
             var imageFromRepo = _galleryRepository.GetImage(id);
 
             if (imageFromRepo == null)
@@ -119,10 +111,7 @@ namespace ImageGallery.API.Controllers
 
             _galleryRepository.DeleteImage(imageFromRepo);
 
-            if (!_galleryRepository.Save())
-            {
-                throw new Exception($"Deleting image with {id} failed on save.");
-            }
+            _galleryRepository.Save();
 
             return NoContent();
         }
@@ -131,32 +120,17 @@ namespace ImageGallery.API.Controllers
         public IActionResult UpdateImage(Guid id, 
             [FromBody] ImageForUpdate imageForUpdate)
         {
-           
-            if (imageForUpdate == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                // return 422 - Unprocessable Entity when validation fails
-                return new UnprocessableEntityObjectResult(ModelState);
-            }
-
             var imageFromRepo = _galleryRepository.GetImage(id);
             if (imageFromRepo == null)
             {
                 return NotFound();
             }
 
-            Mapper.Map(imageForUpdate, imageFromRepo);
+            _mapper.Map(imageForUpdate, imageFromRepo);
 
             _galleryRepository.UpdateImage(imageFromRepo);
 
-            if (!_galleryRepository.Save())
-            {
-                throw new Exception($"Updating image with {id} failed on save.");
-            }
+            _galleryRepository.Save();
 
             return NoContent();
         }
