@@ -28,9 +28,14 @@ namespace NIKHILW.IDP
                      ClientName="Image Gallery",
                      ClientId ="imagegalleryclient",
                      AllowedGrantTypes = GrantTypes.Code,
+                     RequirePkce = false,
                      RedirectUris = new List<string>()
                      {
-                         "https://localhost:5001/signin-oidc"
+                         "https://localhost:44389/signin-oidc"
+                     },
+                     PostLogoutRedirectUris = new List<string>()
+                     {
+                         "https://localhost:44389/signout-callback-oidc"
                      },
                      AllowedScopes =
                     {
